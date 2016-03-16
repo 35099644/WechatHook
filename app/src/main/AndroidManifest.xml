@@ -1,17 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.1" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.niray.wechatmoneyhook">
 
-    <application android:label="Wechat Lucky Money">
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="Wechat Lucky Hook"
+        android:theme="@style/AppTheme">>
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="WeChat Lucky Money Auto Button And Remittance Auto Receive " />
+            android:value="WeChat Lucky Money Auto Open , Remittance Auto Receive , Game Hook" />
         <meta-data
             android:name="xposedminversion"
             android:value="30" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name=".util.MyProvider"
+            android:authorities="com.example.hookdemo.provider"
+            android:exported="true" />
+
     </application>
 
 </manifest>
