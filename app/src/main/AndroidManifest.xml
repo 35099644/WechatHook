@@ -5,7 +5,6 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
         android:label="Wechat Lucky Hook"
         android:theme="@style/AppTheme">>
         <meta-data
