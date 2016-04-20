@@ -18,22 +18,27 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Main implements IXposedHookLoadPackage {
 
+    //Assets jar
+
+    private final static String RemittanceClassPath = "com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI";
+    private final static String RemittanceFunction = "e";//public boolean
+    private final static String RemittanceButtonName = "fRW";// public Button
+
+    private final static String LuckyMoneyClassPath = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI";
+    private final static String LuckyMoneyFunction = "e";//public final boolean
+
+    private final static String MoneyParamClassPath = "com.tencent.mm.s.j";
+
+    private final static String LuckyDetailClassPath = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyDetailUI";
+
+    //big jar
     private final static String HookBaseClassPath = "com.tencent.mm.model.bc";//onAccountPostReset
     private final static String HookBaseFunction = "K";
     private final static String ContextClassPath = "com.tencent.mm.ui.MMFragmentActivity";
 
-    private final static String MoneyParamClassPath = "com.tencent.mm.r.j";
-
-    private final static String RemittanceClassPath = "com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI";
-    private final static String RemittanceFunction = "e";
-    private final static String RemittanceButtonName = "fMr";
-
-    private final static String LuckyMoneyClassPath = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI";
-    private final static String LuckyDetailClassPath = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyDetailUI";
-    private final static String LuckyMoneyFunction = "e";
 
     private final static String GameClassPath = "com.tencent.mm.sdk.platformtools.ba";//id:%d num:%d/%d to
-    private final static String GameFunction = "pU";//new Random(S
+    private final static String GameFunction = "pT";//new Random(S
 
     private int diceCount = 0;
     private int morraNum = 0; // 0-剪刀 1-石头 2-布
@@ -74,7 +79,7 @@ public class Main implements IXposedHookLoadPackage {
 
                 Class j = XposedHelpers.findClass(MoneyParamClassPath, loadPackageParam.classLoader);
                 final Class uiClass = XposedHelpers.findClass(LuckyMoneyClassPath, loadPackageParam.classLoader);
-                final Class luckyDetailClass = XposedHelpers.findClass(LuckyDetailClassPath, loadPackageParam.classLoader);
+//                final Class luckyDetailClass = XposedHelpers.findClass(LuckyDetailClassPath, loadPackageParam.classLoader);
                 final Class remittanceClass = XposedHelpers.findClass(RemittanceClassPath, loadPackageParam.classLoader);
 
                 XposedHelpers.findAndHookMethod(uiClass, "onCreate", Bundle.class, new XC_MethodReplacement() {
