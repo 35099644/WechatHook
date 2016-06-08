@@ -18,28 +18,63 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Main implements IXposedHookLoadPackage {
 
-    //Assets jar
+    public static final String VERSION = "Android 6.3.18";
 
-    private final static String RemittanceClassPath = "com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI";
-    private final static String RemittanceFunction = "e";//public boolean
-    private final static String RemittanceButtonName = "fRW";// public Button
+    /**
+     * Assets jar
+     * from 6.3.15 the money jar move to classes2.dex
+     **/
 
     private final static String LuckyMoneyClassPath = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI";
-    private final static String LuckyMoneyFunction = "e";//public final boolean
+    //public final boolean
+    //int paramInt1, int paramInt2, String paramString, com.tencent.mm.s.j paramj)
+    //if ((paramj instanceof ae))
+    private final static String LuckyMoneyFunction = "d";
+    //    private TextView faI;
+//    private Button faL;
+//    private ImageView faM;
+    private final static String LuckyMoneyButtonName = "faL";// public Button
 
+    private final static String RemittanceClassPath = "com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI";
+    //(int paramInt1, int paramInt2, String paramString, com.tencent.mm.s.j paramj)
+    // if ((paramj instanceof f))
+    //public boolean
+    private final static String RemittanceFunction = "d";
+    //    public TextView fYW = null;
+//    public Button fYX = null;
+//    public TextView fYY = null;
+    private final static String RemittanceButtonName = "fYX";// public Button
+
+    //check $RemittanceClassPath or $RemittanceClassPath params
     private final static String MoneyParamClassPath = "com.tencent.mm.s.j";
 
+    //详情页面包地址
     private final static String LuckyDetailClassPath = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyDetailUI";
-
-    //big jar
-    private final static String HookBaseClassPath = "com.tencent.mm.model.bc";//onAccountPostReset
-    private final static String HookBaseFunction = "K";
+    //Context 包地址
     private final static String ContextClassPath = "com.tencent.mm.ui.MMFragmentActivity";
 
 
-    private final static String GameClassPath = "com.tencent.mm.sdk.platformtools.ba";//id:%d num:%d/%d to
-    private final static String GameFunction = "pT";//new Random(S
+    //big jar class1.dex
 
+    //base model start
+    //1 com.tencent.mm.model.bc
+    //onAccountPostReset   or  onSubCoreAccountPostReset post:
+    private final static String HookBaseClassPath = "com.tencent.mm.model.bc";
+    //在这里更改方法名字 public final void ak*(boolean paramBoolean)
+    private final static String HookBaseFunction = "ak";
+    //base model end
+
+
+    //石头剪刀布 start
+    //2 com.tencent.mm.sdk.platformtools.ba
+    //id:%d num:%d/%d to
+    private final static String GameClassPath = "com.tencent.mm.sdk.platformtools.bc";
+    //new Random(S
+    //  public static int qQ*(int paramInt)
+    private final static String GameFunction = "qQ";
+    //石头剪刀布 end
+
+    //石头剪刀布 params
     private int diceCount = 0;
     private int morraNum = 0; // 0-剪刀 1-石头 2-布
     private Context mContext;
@@ -48,7 +83,7 @@ public class Main implements IXposedHookLoadPackage {
     public void handleLoadPackage(final LoadPackageParam loadPackageParam) throws Throwable {
         if (!loadPackageParam.packageName.equals("com.tencent.mm")) return;
 
-        Log.e("hook", "hookX Success In MM " + loadPackageParam.packageName);
+        Log.e("hook", "hookX Success In MM " + VERSION + loadPackageParam.packageName);
         hookAndGetContext(ContextClassPath, loadPackageParam, "onCreate");
         hookMoney(loadPackageParam);
         findAndHookMethodD(GameClassPath, loadPackageParam, GameFunction);
@@ -75,7 +110,7 @@ public class Main implements IXposedHookLoadPackage {
         XposedHelpers.findAndHookMethod(HookBaseClassPath, loadPackageParam.classLoader, HookBaseFunction, boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                Log.e("hook", "afterHookedMethod In   " + loadPackageParam.packageName);
+                Log.e("hook", "afterHookedMethod In   " + VERSION + loadPackageParam.packageName);
 
                 Class j = XposedHelpers.findClass(MoneyParamClassPath, loadPackageParam.classLoader);
                 final Class uiClass = XposedHelpers.findClass(LuckyMoneyClassPath, loadPackageParam.classLoader);
@@ -107,7 +142,7 @@ public class Main implements IXposedHookLoadPackage {
                 XposedHelpers.findAndHookMethod(remittanceClass, RemittanceFunction, int.class, int.class, String.class, j, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                        Log.e("hook", "afterHookedMethod In remittanceClass e  ");
+                        Log.e("hook", "afterHookedMethod In remittanceClass e  " + VERSION);
                         Button button = (Button) XposedHelpers.getObjectField(param.thisObject, RemittanceButtonName);
 //                            XposedHelpers.callMethod(param.thisObject, "e", param.args);
 //                            Button button = (Button) XposedHelpers.callMethod(param.thisObject, "e", param.args);
@@ -123,8 +158,10 @@ public class Main implements IXposedHookLoadPackage {
                 XposedHelpers.findAndHookMethod(uiClass, LuckyMoneyFunction, int.class, int.class, String.class, j, new XC_MethodHook() {
                             @Override
                             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                Log.e("hook", "afterHookedMethod In uiClass  " + LuckyMoneyFunction);
-                                Button button = (Button) XposedHelpers.callStaticMethod(uiClass, LuckyMoneyFunction, param.thisObject);
+                                Log.e("hook", "afterHookedMethod In uiClass  " + VERSION + LuckyMoneyFunction);
+//                                Button button = (Button) XposedHelpers.callStaticMethod(uiClass, LuckyMoneyFunction, param.thisObject);
+                                //from 6.3.18 use find button
+                                Button button = (Button) XposedHelpers.getObjectField(param.thisObject, LuckyMoneyButtonName);
                                 if (button.isShown() && button.isClickable()) {
                                     button.performClick();
                                     button.setClickable(false);
